@@ -11,11 +11,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         is_admin = validated_data.pop('is_admin', False)
+        is_staff=validated_data.pop('is_staff',False)
         try:
             if is_admin:
-                user = CustomUser.objects.create_superuser(**validated_data)
+                user = CustomUser.objects.create_admin(**validated_data)
+            elif is_staff and not is_admin:
+                user = CustomUser.objects.create_staff(**validated_data)
             else:
-                user = CustomUser.objects.create_user(**validated_data)
+                user=CustomUser.objects.create_user(**validated_data)
             return user
         except Exception as e:
             raise serializers.ValidationError(str(e))

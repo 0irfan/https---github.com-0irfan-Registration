@@ -12,20 +12,30 @@ class CustomUserManager(BaseUserManager):
         user = self.model(email=email, username=username)
         user.set_password(password)
         user.save(using=self._db)
+        
         return user
 
-    def create_superuser(self, email, username, password):
+    def create_admin(self, email, username, password):
         user = self.create_user(email=email, username=username, password=password)
         user.is_staff = True
-        user.is_superuser = True
+        user.is_admin = True
         user.save(using=self._db)
         return user
+    
+    def create_staff(self, email, username, password):
+        user = self.create_user(email=email, username=username, password=password)
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_admin=models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
